@@ -23,7 +23,7 @@ UsersServices.createUser = async (req, res) => {
       } else {
         res.json({
           message: 'Datos recibidos correctamente',
-          data,
+          success: true,
         });
       }
     });

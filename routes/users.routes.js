@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const UserServices = require('../services/users.service');
 
-router.get('/login', UserServices.getUsers);
-router.post('/login', UserServices.createUser);
+router.get('/users', UserServices.getUsers);
+router.post('/users/register', UserServices.createUser);
 /* router.patch('/login/:id', async (req, res) => {
   const data = await req.body;
   const { id } = req.params;

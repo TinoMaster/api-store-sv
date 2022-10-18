@@ -7,8 +7,10 @@ const digitalSchema = new Schema({
   description: String,
   price: Number,
   discount: Number,
+  edition: String,
   editions: Array,
   image: String,
+  category: String,
   information: {
     Platform: String,
     year: Date,

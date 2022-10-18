@@ -34,10 +34,17 @@ DigitalService.findSome = (req, res) => {
   res.json(products);
 };
 DigitalService.create = (req, res) => {
-  const body = req.body;
-  res.status(201).json({
-    message: 'Archivo insertado correctamente',
-    data: body,
+  const data = req.body;
+  data.image = faker.image.imageUrl();
+  DigitalConecction.create(data, (err) => {
+    if (err) {
+      throw boom.internal('No hay conexion con la base de datos');
+    } else {
+      res.json({
+        message: 'Se ah insertado correctamente',
+        data: data,
+      });
+    }
   });
 };
 DigitalService.updatePatch = (req, res) => {

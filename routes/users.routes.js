@@ -3,6 +3,7 @@ const router = express.Router();
 const UserServices = require('../services/users.service');
 
 router.get('/users', UserServices.getUsers);
+router.get('/users/:id', UserServices.getUserById);
 router.post('/users/register', UserServices.createUser);
 /* router.patch('/login/:id', async (req, res) => {
   const data = await req.body;

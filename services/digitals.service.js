@@ -1,7 +1,22 @@
-const ProductsService = () => {};
+const DigitalService = () => {};
+const DigitalConecction = require('../models/digital.model');
+const boom = require('@hapi/boom');
 const { faker } = require('@faker-js/faker');
 
-ProductsService.find = (req, res) => {
+DigitalService.find = (req, res, next) => {
+  DigitalConecction.find().exec((err, docs) => {
+    try {
+      if (err) {
+        throw boom.notFound('Not Found');
+      } else {
+        res.json(docs);
+      }
+    } catch (error) {
+      next(error);
+    }
+  });
+};
+DigitalService.findSome = (req, res) => {
   let products = [];
   const { size } = req.query;
   const limit = size || 10;
@@ -18,14 +33,14 @@ ProductsService.find = (req, res) => {
 
   res.json(products);
 };
-ProductsService.create = (req, res) => {
+DigitalService.create = (req, res) => {
   const body = req.body;
   res.status(201).json({
     message: 'Archivo insertado correctamente',
     data: body,
   });
 };
-ProductsService.updatePatch = (req, res) => {
+DigitalService.updatePatch = (req, res) => {
   const { id } = req.params;
   const body = req.body;
   res.json({
@@ -34,7 +49,7 @@ ProductsService.updatePatch = (req, res) => {
     id,
   });
 };
-ProductsService.deleteProduct = (req, res) => {
+DigitalService.deleteProduct = (req, res) => {
   const { id } = req.params;
   res.json({
     message: 'Se ah Borrado el producto correctamente',
@@ -42,4 +57,4 @@ ProductsService.deleteProduct = (req, res) => {
   });
 };
 
-module.exports = ProductsService;
+module.exports = DigitalService;

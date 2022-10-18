@@ -1,15 +1,34 @@
 const UsersServices = () => {};
 const userConnection = require('../models/users.model');
+const boom = require('@hapi/boom');
 
 UsersServices.getUsers = (req, res) => {
   userConnection.find().exec((err, docs) => {
     if (err) {
-      throw err;
+      throw boom.notFound('Products not found');
     } else {
       res.json({
         message: 'Peticion aceptada',
         data: docs,
       });
+    }
+  });
+};
+UsersServices.getUserById = async (req, res,next) => {
+  const { id } = req.params;
+
+  userConnection.find({ _id: id }).exec((err, docs) => {
+    try {
+      if (err) {
+        throw boom.notFound('Product not found');
+      } else {
+        res.json({
+          message: 'success',
+          data: docs,
+        });
+      }
+    } catch (error) {
+      next(error);
     }
   });
 };

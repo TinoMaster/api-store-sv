@@ -16,22 +16,12 @@ DigitalService.find = (req, res, next) => {
     }
   });
 };
-DigitalService.findSome = (req, res) => {
-  let products = [];
-  const { size } = req.query;
-  const limit = size || 10;
+DigitalService.findOne = (req, res) => {
+  const { id } = req.params;
 
-  for (let i = 0; i < limit; i++) {
-    products.push({
-      id: faker.datatype.uuid(),
-      name: faker.commerce.productName(),
-      price: faker.commerce.price(),
-      product: faker.commerce.product(),
-      image: faker.image.imageUrl(),
-    });
-  }
-
-  res.json(products);
+  DigitalConecction.findById({ _id: id }).exec((err, doc) => {
+    res.json(doc);
+  });
 };
 DigitalService.create = (req, res) => {
   const data = req.body;

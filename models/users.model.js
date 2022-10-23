@@ -4,10 +4,16 @@ const dbConfig = require('./db.config.json');
 
 const usersSchema = new Schema({
   name: String,
-  email: String,
-  password: String,
+  phone: String,
   role: String,
   address: Object,
+  user: {
+    email: {
+      type: String,
+      unique: true,
+    },
+    password: String,
+  },
 });
 
 const userModel = mongoose.model('users', usersSchema);

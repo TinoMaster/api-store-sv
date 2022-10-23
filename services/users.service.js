@@ -2,6 +2,8 @@ const UsersServices = () => {};
 const userConnection = require('../models/users.model');
 const boom = require('@hapi/boom');
 
+const hashPassword = require('../helpers/password.hash');
+
 UsersServices.getUsers = (req, res) => {
   userConnection.find().exec((err, docs) => {
     if (err) {
@@ -14,7 +16,7 @@ UsersServices.getUsers = (req, res) => {
     }
   });
 };
-UsersServices.getUserById = async (req, res,next) => {
+UsersServices.getUserById = async (req, res, next) => {
   const { id } = req.params;
 
   userConnection.find({ _id: id }).exec((err, docs) => {
@@ -32,18 +34,33 @@ UsersServices.getUserById = async (req, res,next) => {
     }
   });
 };
-UsersServices.createUser = async (req, res) => {
+UsersServices.createUser = async (req, res, next) => {
   const data = await req.body;
+  const hashPass = await hashPassword(data.user.password);
+  const newUser = {
+    ...data.user,
+    password: hashPass,
+  };
+  const newData = {
+    ...data,
+    user: newUser,
+  };
 
   if (Object.entries(data).length > 0) {
-    userConnection.create(data, (err) => {
-      if (err) {
-        throw err;
-      } else {
-        res.json({
-          message: 'Datos recibidos correctamente',
-          success: true,
-        });
+    userConnection.create(newData, (err) => {
+      try {
+        if (err) {
+          throw err;
+        } else {
+          res.json({
+            message: 'Datos recibidos correctamente',
+            success: true,
+          });
+        }
+      } catch (error) {
+        error.code === 11000
+          ? next(boom.notAcceptable('El correo ya existe'))
+          : next(boom.notAcceptable(error));
       }
     });
   } else {

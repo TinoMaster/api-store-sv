@@ -2,9 +2,16 @@ const express = require('express');
 const router = express.Router();
 const UserServices = require('../services/users.service');
 
+const { createUserSchema } = require('../schemas/user.schema');
+const validatorHandler = require('../middlewares/validator.handler');
+
 router.get('/users', UserServices.getUsers);
 router.get('/users/:id', UserServices.getUserById);
-router.post('/users/register', UserServices.createUser);
+router.post(
+  '/users/register',
+  validatorHandler(createUserSchema, 'body'),
+  UserServices.createUser
+);
 /* router.patch('/login/:id', async (req, res) => {
   const data = await req.body;
   const { id } = req.params;

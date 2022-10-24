@@ -9,9 +9,13 @@ const address = joi.object({
   numero: joi.string(),
   municipio: joi.string(),
 });
-const user = joi.object({
+const userRegister = joi.object({
   email: joi.string().min(8),
   password: joi.string().min(5),
+});
+const userLogin = joi.object({
+  email: joi.string(),
+  password: joi.string(),
 });
 
 const createUserSchema = joi.object({
@@ -19,7 +23,11 @@ const createUserSchema = joi.object({
   phone: phone,
   role: role,
   address: address,
-  user: user.required(),
+  user: userRegister.required(),
 });
 
-module.exports = { createUserSchema };
+const loginUserSchema = joi.object({
+  user: userLogin.required(),
+});
+
+module.exports = { createUserSchema, loginUserSchema };

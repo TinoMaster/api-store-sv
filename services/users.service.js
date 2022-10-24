@@ -3,6 +3,9 @@ const userConnection = require('../models/users.model');
 const boom = require('@hapi/boom');
 
 const hashPassword = require('../helpers/password.hash');
+const verifyPassword = require('../helpers/password.verify');
+
+const signToken = require('../helpers/token-sign');
 
 UsersServices.getUsers = (req, res) => {
   userConnection.find().exec((err, docs) => {
@@ -34,6 +37,7 @@ UsersServices.getUserById = async (req, res, next) => {
     }
   });
 };
+/* Funcion de registrar usuarios */
 UsersServices.createUser = async (req, res, next) => {
   const data = await req.body;
   const hashPass = await hashPassword(data.user.password);
@@ -68,6 +72,40 @@ UsersServices.createUser = async (req, res, next) => {
       message: 'No de han enviado datos, por favor verificar',
     });
   }
+};
+/* Funcion para login de usuarios */
+UsersServices.loginUser = async (req, res, next) => {
+  const data = req.body;
+
+  userConnection
+    .findOne({ 'user.email': data.user.email })
+    .exec(async (err, docs) => {
+      try {
+        if (err) {
+          next(boom.badData('Credenciales incorrectas'));
+        } else {
+          const isPassword = await verifyPassword(
+            data.user.password,
+            docs.user.password
+          );
+          if (isPassword) {
+            const payload = {
+              sub: docs._id,
+              role: docs.role,
+            };
+            const token = await signToken(payload, process.env.JWT_KEY);
+            res.json({
+              success: true,
+              name: docs.name,
+              role: docs.role,
+              token,
+            });
+          } else next(boom.badData('Contraseña incorrecta'));
+        }
+      } catch (error) {
+        next(boom.badData('Usuario incorrecto'));
+      }
+    });
 };
 
 module.exports = UsersServices;

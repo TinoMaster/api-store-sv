@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const UserServices = require('../services/users.service');
 
-const { createUserSchema, loginUserSchema } = require('../schemas/user.schema');
+const { createUserSchema } = require('../schemas/user.schema');
 const validatorHandler = require('../middlewares/validator.handler');
+const passport = require('passport');
 
 router.get('/users', UserServices.getUsers);
 router.get('/users/:id', UserServices.getUserById);
@@ -11,12 +12,12 @@ router.get('/users/:id', UserServices.getUserById);
 router.post(
   '/users/register',
   validatorHandler(createUserSchema, 'body'),
-  UserServices.createUser
+  UserServices.registerUser
 );
 /* Login de usuario */
 router.post(
   '/users/login',
-  validatorHandler(loginUserSchema, 'body'),
+  passport.authenticate('local', { session: false }),
   UserServices.loginUser
 );
 

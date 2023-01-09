@@ -3,7 +3,6 @@ const userConnection = require('../models/users.model');
 const boom = require('@hapi/boom');
 
 const hashPassword = require('../helpers/password.hash');
-const verifyPassword = require('../helpers/password.verify');
 
 const signToken = require('../helpers/token-sign');
 
@@ -13,6 +12,7 @@ UsersServices.getUsers = (req, res) => {
       throw boom.notFound('Products not found');
     } else {
       res.json({
+        success: true,
         message: 'Peticion aceptada',
         data: docs,
       });
@@ -38,7 +38,7 @@ UsersServices.getUserById = async (req, res, next) => {
   });
 };
 /* Funcion de registrar usuarios */
-UsersServices.createUser = async (req, res, next) => {
+UsersServices.registerUser = async (req, res, next) => {
   const data = await req.body;
   const hashPass = await hashPassword(data.user.password);
   const newUser = {
@@ -75,37 +75,29 @@ UsersServices.createUser = async (req, res, next) => {
 };
 /* Funcion para login de usuarios */
 UsersServices.loginUser = async (req, res, next) => {
-  const data = req.body;
+  try {
+    const user = await req.user;
 
-  userConnection
-    .findOne({ 'user.email': data.user.email })
-    .exec(async (err, docs) => {
-      try {
-        if (err) {
-          next(boom.badData('Credenciales incorrectas'));
-        } else {
-          const isPassword = await verifyPassword(
-            data.user.password,
-            docs.user.password
-          );
-          if (isPassword) {
-            const payload = {
-              sub: docs._id,
-              role: docs.role,
-            };
-            const token = await signToken(payload, process.env.JWT_KEY);
-            res.json({
-              success: true,
-              name: docs.name,
-              role: docs.role,
-              token,
-            });
-          } else next(boom.badData('Contraseña incorrecta'));
-        }
-      } catch (error) {
-        next(boom.badData('Usuario incorrecto'));
-      }
+    const payload = {
+      sub: user._id,
+      role: user.role,
+    };
+
+    const token = await signToken(payload, process.env.JWT_KEY);
+
+    res.json({
+      success: true,
+      name: user.name,
+      role: user.role,
+      token,
     });
+  } catch (error) {
+    res.json({
+      error: true,
+      message: error.message,
+    });
+    next(error);
+  }
 };
 
 module.exports = UsersServices;

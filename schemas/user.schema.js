@@ -3,6 +3,7 @@ const joi = require('joi');
 const name = joi.string().min(2);
 const phone = joi.string();
 const role = joi.string().min(3);
+const active = joi.number().max(1);
 const address = joi.object({
   calle: joi.string(),
   entre: joi.string(),
@@ -23,6 +24,7 @@ const createUserSchema = joi.object({
   phone: phone,
   role: role,
   address: address,
+  active: active.required(),
   user: userRegister.required(),
 });
 

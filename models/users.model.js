@@ -1,12 +1,22 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const dbConfig = require('./db.config.json');
+const dbConfig = require('./db.config');
 
 const usersSchema = new Schema({
   name: String,
   phone: String,
   role: String,
-  address: Object,
+  address: [
+    {
+      calle: String,
+      entre: String,
+      numero: String,
+      apto: String,
+      municipio: String,
+      description: String,
+    },
+  ],
+  active: Number,
   user: {
     email: {
       type: String,
@@ -16,8 +26,8 @@ const usersSchema = new Schema({
   },
 });
 
-const userModel = mongoose.model('users', usersSchema);
+const UserModel = mongoose.model('users', usersSchema);
 
-mongoose.connect(`mongodb://${dbConfig.mongo.host}/${dbConfig.mongo.db}`);
+mongoose.connect(`${dbConfig.mongoHost}/${dbConfig.mongoDb}`);
 
-module.exports = userModel;
+module.exports = UserModel;

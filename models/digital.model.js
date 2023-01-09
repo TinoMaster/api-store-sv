@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const dbConfig = require('./db.config.json');
+const dbConfig = require('./db.config');
 
 const digitalSchema = new Schema({
   title: String,
@@ -21,8 +21,8 @@ const digitalSchema = new Schema({
   },
 });
 
-const digitalModel = mongoose.model('digitals', digitalSchema);
+const DigitalModel = mongoose.model('digitals', digitalSchema);
 
-mongoose.connect(`mongodb://${dbConfig.mongo.host}/${dbConfig.mongo.db}`);
+mongoose.connect(`${dbConfig.mongoHost}/${dbConfig.mongoDb}`);
 
-module.exports = digitalModel;
+module.exports = DigitalModel;

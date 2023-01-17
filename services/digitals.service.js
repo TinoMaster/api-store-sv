@@ -1,18 +1,16 @@
 const DigitalService = () => {};
 const DigitalConecction = require('../models/digital.model');
-const boom = require('@hapi/boom');
-const { faker } = require('@faker-js/faker');
 
-DigitalService.find = (req, res, next) => {
+DigitalService.find = (req, res) => {
   DigitalConecction.find().exec((err, docs) => {
     try {
       if (err) {
-        throw boom.notFound('Not Found');
+        throw err;
       } else {
         res.json(docs);
       }
     } catch (error) {
-      next(error);
+      console.log(error);
     }
   });
 };
@@ -25,10 +23,10 @@ DigitalService.findOne = (req, res) => {
 };
 DigitalService.create = (req, res) => {
   const data = req.body;
-  data.image = faker.image.imageUrl();
+
   DigitalConecction.create(data, (err) => {
     if (err) {
-      throw boom.internal('No hay conexion con la base de datos');
+      throw err;
     } else {
       res.json({
         message: 'Se ah insertado correctamente',
@@ -48,10 +46,21 @@ DigitalService.updatePatch = (req, res) => {
 };
 DigitalService.deleteProduct = (req, res) => {
   const { id } = req.params;
-  res.json({
-    message: 'Se ah Borrado el producto correctamente',
-    id,
-  });
+  try {
+    DigitalConecction.findByIdAndDelete({ _id: id }).exec((err, doc) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json({ error: true, message: 'Internal error' });
+      } else {
+        doc !== null
+          ? res.json({ success: true, message: 'Product Deleted' })
+          : res.json({ error: true, message: 'Product non-existed' });
+      }
+    });
+  } catch (error) {
+    /*  console.log(error); */
+    res.status(500).json({ error: true, message: 'internal error' });
+  }
 };
 
 module.exports = DigitalService;

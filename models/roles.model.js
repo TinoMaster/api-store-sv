@@ -3,7 +3,11 @@ const Schema = mongoose.Schema;
 const dbConfig = require('./db.config');
 
 const rolesSchema = new Schema({
-  name: String,
+  name: {
+    type: String,
+    unique: true,
+    required: true,
+  },
 });
 
 const RolesModel = mongoose.model('roles', rolesSchema);
